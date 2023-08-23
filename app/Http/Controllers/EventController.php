@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateEventRequest;
+use App\Http\Requests\UpdateEventRequest;
 use App\Models\Country;
 use App\Models\Event;
 use App\Models\Tag;
@@ -62,17 +63,30 @@ class EventController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Event $event): View
     {
-        //
+        $countries = Country::all();
+        $tags = Tag::all();
+        return view('events.edit', compact('event', 'countries', 'tags'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateEventRequest $request, Event $event)
     {
-        //
+        $data = $request->validated();
+        $data['slug'] = Str::slug($request->title);
+
+        if ($request->hasFile('image')) {
+            $data['image'] = Storage::putFile('events', $request->file('image'));
+        }
+
+        $event->update($data);
+        $event->tags()->sync($request->tags);
+
+        return to_route('events.index');
+
     }
 
     /**
