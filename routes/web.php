@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\AttendingSystemController;
+use App\Http\Controllers\DeleteCommentController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventShowController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\LikeSystemController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SaveSystemController;
+use App\Http\Controllers\StoreCommentController;
 use App\Http\Controllers\WelcomeController;
 use App\Models\Country;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +41,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/events-like/{id}', LikeSystemController::class)->name('events.like');
     Route::post('/events-save/{id}', SaveSystemController::class)->name('events.save');
     Route::post('/events-attending/{id}', AttendingSystemController::class)->name('events.attending');
+
+    Route::post('/events/{id}/comments', StoreCommentController::class)->name('events.comments');
+    Route::post('/events/{id}/comments/{comment}', DeleteCommentController::class)->name('events.comments.destroy');
 
     Route::get('/countries/{country}', function (Country $country) {
         return response()->json(
