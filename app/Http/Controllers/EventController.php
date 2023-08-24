@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateEventRequest;
 use App\Models\Country;
 use App\Models\Event;
 use App\Models\Tag;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -20,7 +21,7 @@ class EventController extends Controller
     public function index(): View
     {
         $events = Event::with('country')->get();
-        return view('events.index',compact('events'));
+        return view('events.index', compact('events'));
     }
 
     /**
@@ -73,7 +74,7 @@ class EventController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEventRequest $request, Event $event)
+    public function update(UpdateEventRequest $request, Event $event): RedirectResponse
     {
         $data = $request->validated();
         $data['slug'] = Str::slug($request->title);
@@ -92,8 +93,11 @@ class EventController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Event $event): RedirectResponse
     {
-        //
+        Storage::delete($event->image);
+        $event->tags()->detach();
+        $event->delete();
+        return to_route('events.index');
     }
 }
