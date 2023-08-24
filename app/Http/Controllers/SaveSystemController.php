@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 
-class LikeSystemController extends Controller
+class SaveSystemController extends Controller
 {
     /**
      * Handle the incoming request.
@@ -12,15 +12,15 @@ class LikeSystemController extends Controller
     public function __invoke($id)
     {
         $event = Event::findOrFail($id);
-        $like = $event->likes()->where('user_id', auth()->id())->first();
-        if (!is_null($like)) {
-            $like->delete();
+        $savedEvent = $event->savedEvents()->where('user_id', auth()->id())->first();
+        if (!is_null($savedEvent)) {
+            $savedEvent->delete();
             return null;
         } else {
-            $like = $event->likes()->create([
+            $savedEvent = $event->savedEvents()->create([
                 'user_id' => auth()->id(),
             ]);
-            return $like;
+            return $savedEvent;
         }
     }
 }
